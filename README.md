@@ -323,7 +323,7 @@ Your Final Output JSON should follow below structure.  <br>
 ---------
 ### Submission :
 
-#### Please follow : [Submission Notebook]https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/Submission.ipynb)
+#### Please follow : [Submission Notebook](https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/Submission.ipynb)
 ##### ```def your_meeting_assistant( )``` takes Meeting request JSON as Input
 ##### ```your_meeting_assistant( )``` returns with two New Fields : 
 - processed 
