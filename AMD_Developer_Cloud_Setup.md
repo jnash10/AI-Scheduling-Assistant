@@ -2,17 +2,16 @@
 
 #### 2.Select ```GPU Droplets```
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/96d16c4f-fb20-4fbc-b94d-f84da4157cae)
-
+<img width="1871" height="1069" alt="image" src="https://github.com/user-attachments/assets/7391ff6b-22bd-4a13-8de2-3c786f0dfbbc" />
 
 #### 3.Click ```Create GPU Droplet``` at the Right 
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/f5416b14-9f70-4c9e-b440-799cc5a6cfb7)
-
+<img width="1804" height="533" alt="image" src="https://github.com/user-attachments/assets/1f1ac6df-9e7c-432b-8811-64688a557134" />
 
 #### 4.Create GPU Droplet by selecting ```AMD MI300X``` ( Single MI300 GPU ) & Select Snapshot ```Ubuntu_AMD_Hackathon_AI_Scheduling_Assistant```
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/8a26ba31-8c19-4a06-9371-a7e8a058d0c9)
+<img width="1155" height="894" alt="image" src="https://github.com/user-attachments/assets/1736cc99-a6a0-4c5d-82f7-deac30e07122" />
+
 
 #### 5.Add SSH Key & Select 
 
