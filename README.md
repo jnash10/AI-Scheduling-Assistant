@@ -34,7 +34,7 @@ Traditional scheduling tools rely on rule-based automation or human input. Your 
 
 ----------------
 
-### To Create MI300 Instance, follow the steps in : [AMD Developer Cloud Setup Readme](https://gitenterprise.xilinx.com/asirra/AI-Scheduling-Assistant/blob/main/AMD_Developer_Cloud_Setup.md)
+### To Create MI300 Instance, follow the steps in : [AMD Developer Cloud Setup Readme](https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/AMD_Developer_Cloud_Setup.md)
 #### In High Level : 
 - Select ```GPU Droplets```
 - Click on ```Create GPU Droplets```
@@ -56,7 +56,7 @@ Traditional scheduling tools rely on rule-based automation or human input. Your 
 - Data Processing: Extract event details (start/end times, attendees) and structure them into a clean format.
 - Output: Return a list of events with attendee counts and time slots.
 
-#### Follow the notebook for example usage : [Calendar_Event_Extraction](https://gitenterprise.xilinx.com/asirra/AI-Scheduling-Assistant/blob/main/Calendar_Event_Extraction.ipynb)
+#### Follow the notebook for example usage : [Calendar_Event_Extraction](https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/Calendar_Event_Extraction.ipynb)
 
 ----------------
 
@@ -84,7 +84,7 @@ HIP_VISIBLE_DEVICES=0 vllm serve /home/user/Models/deepseek-ai/deepseek-llm-7b-c
         --max-model-len 2048 \
         --distributed-executor-backend "mp"
 ```
-#### For setting up vLLM server with DeepSeek Model & usage, please follow : [vLLM_Inference_Servering_DeepSeek](https://gitenterprise.xilinx.com/asirra/AI-Scheduling-Assistant/blob/main/vLLM_Inference_Servering_DeepSeek.ipynb)
+#### For setting up vLLM server with DeepSeek Model & usage, please follow : [vLLM_Inference_Servering_DeepSeek](https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/vLLM_Inference_Servering_DeepSeek.ipynb)
 
 #### Start the vLLM server with Meta-Llama-3.1-8B-Instruct Model
 
@@ -168,7 +168,7 @@ class AI_AGENT:
 ```
 
 
-#### Follow the Notebook for setting-up an example AI Agent : [Sample_AI_Agent](https://gitenterprise.xilinx.com/asirra/AI-Scheduling-Assistant/blob/main/Sample_AI_Agent.ipynb)
+#### Follow the Notebook for setting-up an example AI Agent : [Sample_AI_Agent](https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/Sample_AI_Agent.ipynb)
 
 The Notebook demonstrates how to create a simple AI Agent that uses vLLM & OpenAI API to communicate with LLM Model.
 
@@ -323,7 +323,7 @@ Your Final Output JSON should follow below structure.  <br>
 ---------
 ### Submission :
 
-#### Please follow : [Submission Jupyter Notebook](https://gitenterprise.xilinx.com/asirra/AI-Scheduling-Assistant/blob/main/Submission.ipynb)
+#### Please follow : [Submission Notebook]https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/Submission.ipynb)
 ##### ```def your_meeting_assistant( )``` takes Meeting request JSON as Input
 ##### ```your_meeting_assistant( )``` returns with two New Fields : 
 - processed 
