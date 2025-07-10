@@ -12,32 +12,32 @@
 
 <img width="1155" height="894" alt="image" src="https://github.com/user-attachments/assets/1736cc99-a6a0-4c5d-82f7-deac30e07122" />
 
-
 #### 5.Add SSH Key & Select 
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/37aba365-118d-410b-af22-6d18695a47e5)
+<img width="674" height="385" alt="image" src="https://github.com/user-attachments/assets/9a0e2921-dd9c-425f-b28e-c1704baa0a0e" />
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/6986071e-54a6-4e3e-95ea-36ef6e111090)
-
+<img width="654" height="398" alt="image" src="https://github.com/user-attachments/assets/96f44a78-4121-4b07-a0f6-3a455d7ae672" />
 
 #### 6.And click on ```Create GPU Droplet``` 
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/21f46f79-307e-487c-9778-375e74caa719)
+<img width="472" height="471" alt="image" src="https://github.com/user-attachments/assets/2d9d82ce-1319-40ed-b3a4-a11984448ee2" />
 
 #### 7.Click on ```Web Console``` at the Top-Right : 
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/a664c01f-993a-4040-a9cd-ea70a9845a68)
+<img width="1249" height="740" alt="image" src="https://github.com/user-attachments/assets/df3e53ff-116e-439b-a3f5-974421efa8de" />
+
 
 #### 8.You will see a console. You can See IP address & Jupyter Token : 
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/0cd2d07f-c12d-4e69-84d3-61b773a42806)
+<img width="1432" height="1060" alt="{6035FF14-CED1-404B-8226-EEFC1EA8B849}" src="https://github.com/user-attachments/assets/09879299-1177-4190-9e97-55503d608ba5" />
 
 #### 9.Copy Paste IP address in Chrome & login with using Jupyter Token 
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/952dc139-98d2-447e-9f1d-d49e67a45bda)
+<img width="1283" height="572" alt="image" src="https://github.com/user-attachments/assets/b0e96dc5-dece-45f1-b88a-3700620a44d3" />
 
 #### 10.Now you have access to Jupyter Lab with all the helper Notebooks : 
 
-![image](https://media.gitenterprise.xilinx.com/user/841/files/5c10f762-f8a1-4302-8f48-41546814f846)
+<img width="1462" height="1067" alt="{E5FFF69D-3BE2-4EF2-B593-C30D0C59E314}" src="https://github.com/user-attachments/assets/fa1a9795-3a44-4f6d-afbc-df6a1739c5c4" />
+
 
 
