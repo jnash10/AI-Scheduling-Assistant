@@ -43,7 +43,7 @@ Traditional scheduling tools rely on rule-based automation or human input. Your 
 
 ### Prerequisite : 
 
-Run the below command in your Notebook Terminal to update the scripts. 
+##### Run the below command in your Notebook Terminal to update the scripts. 
 ```
 https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant.git
 cp -r AI-Scheduling-Assistant/* ./
