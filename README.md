@@ -48,9 +48,7 @@ Run the below command in your Notebook Terminal to update the scripts.
 https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant.git
 cp -r AI-Scheduling-Assistant/* ./
 ```
-
-<img width="902" height="260" alt="{4C1BD127-C8FE-4C46-B9E0-1930DE3CAEC0}" src="https://github.com/user-attachments/assets/d57d3836-9d4d-424f-9518-49d9534eb547" />
-
+-------------
 
 ### Extracting Google Calendar Events :
 #### The Notebook demonstrates how to programmatically retrieve and process Google Calendar events for a given user and date range.
