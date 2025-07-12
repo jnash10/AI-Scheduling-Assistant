@@ -34,16 +34,10 @@ Traditional scheduling tools rely on rule-based automation or human input. Your 
 
 ----------------
 
-### To Create MI300 Instance, follow the steps in : [AMD Developer Cloud Setup Readme](https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/AMD_Developer_Cloud_Setup.md)
-#### In High Level : 
-- Select ```GPU Droplets```
-- Click on ```Create GPU Droplets```
-- Select ```AMD MI300X```
-- In Snapshots, select ```Ubuntu_AMD_Hackathon_AI_Scheduling_Assistant```
-- Create & Add SSH Keys
-- Create GPU Droplet
-- Open Web Console 
-- Copy Paste URL in Chrome & Paste the Jupyter Token
+### To access MI300 Instance, follow the steps as mentioned below :
+
+<img width="809" height="857" alt="{E739B41B-9914-45A1-8413-778E28C7F3E6}" src="https://github.com/user-attachments/assets/3b9d68c7-f994-486b-8734-ff61648bb192" />
+
 
 ----------------
 ### Extracting Google Calendar Events :
