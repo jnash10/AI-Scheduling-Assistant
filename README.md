@@ -304,9 +304,7 @@ Your Final Output JSON should follow below structure.  <br>
 
 #### Please follow : [Submission Notebook](https://github.com/AMD-AI-HACKATHON/AI-Scheduling-Assistant/blob/main/Submission.ipynb)
 ##### ```def your_meeting_assistant( )``` takes Meeting request JSON as Input
-##### ```your_meeting_assistant( )``` returns with two New Fields : 
-- processed 
-- output
+##### ```your_meeting_assistant( )``` returns with New Fields.  
 #### At the end of the Hackathon time ( at 2:00 P.M), you must execute this code
 #### We will send JSONs at Port 5000 & will receive your AI Assistant Response
 #### Make sure that your Output strictly follows the specified format. 
