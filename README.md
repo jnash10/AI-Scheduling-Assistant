@@ -18,7 +18,7 @@ Traditional scheduling tools rely on rule-based automation or human input. Your 
 ✅ Autonomous Coordination: The AI initiates scheduling without human micromanagement. <br>
 ✅ Dynamic Adaptability: Handles last-minute changes or conflicting priorities. <br>
 ✅ Natural Language Interaction: Users may converse with the AI (e.g., “Schedule a meeting on Tuesday”).  <br>
-✅ Latency:( Time taken from Sending Input JSON & getting Output JSON ) should be < 10 sec. <br>
+✅ Latency: (Time taken from Sending Input JSON & getting Output JSON) should be < 10 sec. <br>
 
 #### Success Metrics: 
 #### A winning solution will excel in: <br>
