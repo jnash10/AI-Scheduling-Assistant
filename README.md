@@ -327,7 +327,7 @@ print(response.json())
 
 ### Evaluation Criteria for Scoring & Ranking :
 - Correctness of Output – Accuracy and precision of the results 
-- Roundtrip Latency – Speed and efficiency of processing and response 
+- Roundtrip Latency – Speed and efficiency of processing and response ( Timeout : 10 sec ) 
 - Maintenance of GitHub Repository – Code organization, documentation, and commit hygiene 
 - Creativeness in Approach – Innovation, originality, and problem-solving uniqueness 
 - Scoring Based on Performance – Combined assessment of correctness, latency, repo quality, and creativity 
