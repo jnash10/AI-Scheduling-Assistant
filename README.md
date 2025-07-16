@@ -313,7 +313,7 @@ Your Final Output JSON should follow below structure.  <br>
 ### Validation : 
 #### You can Send Input JSON from your local Laptop to MI300 GPU instance and can validate the response. 
 
-```
+```python3
 import requests
 SERVER_URL = "<YOUR IP ADDRESSS>"
 INPUT_JSON_FILE = "JSON_Samples/Input_Request.json"
@@ -322,6 +322,7 @@ with open(INPUT_JSON_FILE) as f:
 response = requests.post(SERVER_URL+":5000/receive", json=input_json, timeout=10)
 print(response.json())
 ```
+---------
 
 
 ### Evaluation Criteria for Scoring & Ranking :
