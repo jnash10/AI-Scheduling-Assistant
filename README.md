@@ -315,6 +315,7 @@ Your Final Output JSON should follow below structure.  <br>
 
 ```python3
 import requests
+import json
 SERVER_URL = "<YOUR IP ADDRESSS>"
 INPUT_JSON_FILE = "JSON_Samples/Input_Request.json"
 with open(INPUT_JSON_FILE) as f:
