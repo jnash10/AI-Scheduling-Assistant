@@ -18,7 +18,7 @@ Traditional scheduling tools rely on rule-based automation or human input. Your 
 ✅ Autonomous Coordination: The AI initiates scheduling without human micromanagement. <br>
 ✅ Dynamic Adaptability: Handles last-minute changes or conflicting priorities. <br>
 ✅ Natural Language Interaction: Users may converse with the AI (e.g., “Schedule a meeting on Tuesday”).  <br>
-✅	Calendar Integration: Syncs with Google Calendar <br>
+✅ Latency:( Time taken from Sending Input JSON & getting Output JSON ) should be < 10 sec. <br>
 
 #### Success Metrics: 
 #### A winning solution will excel in: <br>
@@ -185,8 +185,8 @@ The input to your code will be in JSON format in the below structure.
 ```
 {
     "Request_id": "6118b54f-907b-4451-8d48-dd13d76033a5",
-    "Datetime": "09-07-2025T12:34:55",
-    "Location": "IIT Mumbai",
+    "Datetime": "19-07-2025T12:34:55",
+    "Location": "IISc Bangalore",
     "From": "userone.amd@gmail.com",
     "Attendees": [
         {
@@ -207,16 +207,16 @@ Your Final Output JSON should follow below structure.  <br>
 ```
 {
     "Request_id": "6118b54f-907b-4451-8d48-dd13d76033a5",
-    "Datetime": "09-07-2025T12:34:55",
-    "Location": "IIT Mumbai",
+    "Datetime": "19-07-2025T12:34:55",
+    "Location": "IISc Bangalore",
     "From": "userone.amd@gmail.com",
     "Attendees": [
         {
             "email": "userone.amd@gmail.com",
             "events": [
                 {
-                    "StartTime": "2025-07-17T10:30:00+05:30",
-                    "EndTime": "2025-07-17T11:00:00+05:30",
+                    "StartTime": "2025-07-24T10:30:00+05:30",
+                    "EndTime": "2025-07-24T11:00:00+05:30",
                     "NumAttendees": 3,
                     "Attendees": [
                         "userone.amd@gmail.com",
@@ -231,8 +231,8 @@ Your Final Output JSON should follow below structure.  <br>
             "email": "usertwo.amd@gmail.com",
             "events": [
                 {
-                    "StartTime": "2025-07-17T10:00:00+05:30",
-                    "EndTime": "2025-07-17T10:30:00+05:30",
+                    "StartTime": "2025-07-24T10:00:00+05:30",
+                    "EndTime": "2025-07-24T10:30:00+05:30",
                     "NumAttendees": 3,
                     "Attendees": [
                         "userone.amd@gmail.com",
@@ -242,8 +242,8 @@ Your Final Output JSON should follow below structure.  <br>
                     "Summary": "Team Meet"
                 },
                 {
-                    "StartTime": "2025-07-17T10:30:00+05:30",
-                    "EndTime": "2025-07-17T11:00:00+05:30",
+                    "StartTime": "2025-07-24T10:30:00+05:30",
+                    "EndTime": "2025-07-24T11:00:00+05:30",
                     "NumAttendees": 3,
                     "Attendees": [
                         "userone.amd@gmail.com",
@@ -258,8 +258,8 @@ Your Final Output JSON should follow below structure.  <br>
             "email": "userthree.amd@gmail.com",
             "events": [
                 {
-                    "StartTime": "2025-07-17T10:00:00+05:30",
-                    "EndTime": "2025-07-17T10:30:00+05:30",
+                    "StartTime": "2025-07-24T10:00:00+05:30",
+                    "EndTime": "2025-07-24T10:30:00+05:30",
                     "NumAttendees": 3,
                     "Attendees": [
                         "userone.amd@gmail.com",
@@ -269,8 +269,8 @@ Your Final Output JSON should follow below structure.  <br>
                     "Summary": "Team Meet"
                 },
                 {
-                    "StartTime": "2025-07-17T13:00:00+05:30",
-                    "EndTime": "2025-07-17T14:00:00+05:30",
+                    "StartTime": "2025-07-24T13:00:00+05:30",
+                    "EndTime": "2025-07-24T14:00:00+05:30",
                     "NumAttendees": 1,
                     "Attendees": [
                         "SELF"
@@ -278,8 +278,8 @@ Your Final Output JSON should follow below structure.  <br>
                     "Summary": "Lunch with Customers"
                 },
                 {
-                    "StartTime": "2025-07-17T10:30:00+05:30",
-                    "EndTime": "2025-07-17T11:00:00+05:30",
+                    "StartTime": "2025-07-24T10:30:00+05:30",
+                    "EndTime": "2025-07-24T11:00:00+05:30",
                     "NumAttendees": 3,
                     "Attendees": [
                         "userone.amd@gmail.com",
@@ -293,8 +293,8 @@ Your Final Output JSON should follow below structure.  <br>
     ],
     "Subject": "Agentic AI Project Status Update",
     "EmailContent": "Hi team, let's meet on Thursday for 30 minutes to discuss the status of Agentic AI Project.",
-    "EventStart": "2025-07-17T10:30:00+05:30",
-    "EventEnd": "2025-07-17T11:00:00+05:30",
+    "EventStart": "2025-07-24T10:30:00+05:30",
+    "EventEnd": "2025-07-24T11:00:00+05:30",
     "Duration_mins": "30",
     "MetaData": {}
 }
