@@ -1,5 +1,5 @@
 {
-    "Request_id": "6118b54f-907b-4451-8d48-dd13d76033a5",
+    "Request_id": "6118b54f-907b-4451-8d48-dd13d76033b5",
     "Datetime": "19-07-2025T12:34:55",
     "Location": "IISc Bangalore",
     "From": "userone.amd@gmail.com",
@@ -11,6 +11,6 @@
             "email": "userthree.amd@gmail.com"
         }
     ],
-    "Subject": "Agentic AI Project Status Update",
-    "EmailContent": "Hi team, let's meet on Thursday for 30 minutes to discuss the status of Agentic AI Project."
+    "Subject": "Client Validation - Urgent",
+    "EmailContent": "Hi Team. We’ve just received quick feedback from the client indicating that the instructions we provided aren’t working on their end. Let’s prioritize resolving this promptly. Let’s meet Monday at 9:00 AM to discuss and resolve this issue."
 }

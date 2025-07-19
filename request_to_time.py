@@ -36,7 +36,6 @@ def extract_time_window(meeting_request: Dict[str, Any]) -> Dict[str, Any]:
     # Create the prompt with examples and instructions
     prompt = f"""You are a meeting scheduler AI. Extract time windows from natural language meeting requests.
 
-Current date and time: {current_iso}
 Request made on: {request_datetime}
 
 EXAMPLES:
