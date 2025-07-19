@@ -41,16 +41,16 @@ Request made on: {request_datetime}
 
 EXAMPLES:
 Input: "Let's meet on Thursday at 10 am for 20 minutes"
-Output: {{"duration": 20, "start_time": "2025-07-24T10:00:00", "end_time": "2025-07-24T10:20:00"}}
+Output: {{"duration": 20, "start_time": "2025-07-24T10:00:00+05:30", "end_time": "2025-07-24T10:20:00+05:30"}}
 
 Input: "Can we meet Friday for 1 hour"
-Output: {{"duration": 60, "start_time": "2025-07-25T00:00:00", "end_time": "2025-07-25T23:59:00"}}
+Output: {{"duration": 60, "start_time": "2025-07-25T00:00:00+05:30", "end_time": "2025-07-25T23:59:00+05:30"}}
 
 Input: "Let's schedule 30 minutes sometime next week"
-Output: {{"duration": 30, "start_time": "2025-07-21T00:00:00", "end_time": "2025-07-25T23:30:00"}}
+Output: {{"duration": 30, "start_time": "2025-07-21T00:00:00+05:30", "end_time": "2025-07-25T23:30:00+05:30"}}
 
 Input: "Meeting tomorrow at 2 PM for 45 minutes"
-Output: {{"duration": 45, "start_time": "2025-07-20T14:00:00", "end_time": "2025-07-20T14:45:00"}}
+Output: {{"duration": 45, "start_time": "2025-07-21T14:00:00+05:30", "end_time": "2025-07-21T14:45:00+05:30"}}
 
 RULES:
 1. Duration is in hours (decimal format)
