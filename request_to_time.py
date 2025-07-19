@@ -1,314 +1,226 @@
-"""
-Meeting Request Time Extraction Module
-
-This module provides functionality to extract meeting duration and timing information
-from meeting requests using LLM-based natural language processing.
-"""
-
+import openai
 import json
-import re
 from datetime import datetime, timedelta
-from typing import Dict, Any, Tuple
-from openai import OpenAI
+from typing import Dict, Any
+
+# Your existing client configuration
+BASE_URL = "http://localhost:4000/v1"
+MODEL_PATH = "Models/meta-llama/Llama-3.3-70B-Instruct"
+
+client = openai.OpenAI(
+    base_url=BASE_URL,
+    api_key="NULL",  # vLLM doesn't require an API key
+)
 
 
-class MeetingTimeExtractor:
+def extract_time_window(meeting_request: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Extracts meeting time information from meeting requests using LLM.
-    """
-
-    def __init__(
-        self,
-        base_url: str = "http://localhost:3000/v1",
-        api_key: str = "NULL",
-        model_path: str = "/home/user/Models/deepseek-ai/deepseek-llm-7b-chat",
-    ):
-        """
-        Initialize the MeetingTimeExtractor.
-
-        Args:
-            base_url: Base URL for the OpenAI-compatible API endpoint
-            api_key: API key (usually "NULL" for vLLM)
-            model_path: Path to the model
-        """
-        self.client = OpenAI(
-            base_url=base_url, api_key=api_key, timeout=30, max_retries=2
-        )
-        self.model_path = model_path
-        self.timezone_offset = "+05:30"  # IST timezone
-
-    def extract_meeting_info(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Extract meeting duration and timing information from a meeting request.
-
-        Args:
-            request_data: Meeting request JSON containing Datetime, EmailContent, etc.
-
-        Returns:
-            Dict containing duration_minutes, start_time, end_time
-        """
-        try:
-            email_content = request_data.get("EmailContent", "")
-            request_datetime = request_data.get("Datetime", "")
-
-            # Parse the request datetime
-            base_datetime = self._parse_datetime(request_datetime)
-
-            # Extract duration and timing using LLM
-            extracted_info = self._extract_with_llm(email_content, request_datetime)
-
-            # Parse the LLM response
-            duration_minutes = extracted_info.get(
-                "duration_minutes", 30
-            )  # Default 30 minutes
-            relative_time = extracted_info.get("relative_time", "")
-
-            # Calculate start and end times
-            start_time, end_time = self._calculate_meeting_times(
-                base_datetime, duration_minutes, relative_time
-            )
-
-            return {
-                "duration_minutes": duration_minutes,
-                "start_time": start_time,
-                "end_time": end_time,
-                "relative_time": relative_time,
-            }
-
-        except Exception as e:
-            print(f"Error extracting meeting info: {e}")
-            # Return default values if extraction fails
-            base_datetime = self._parse_datetime(request_data.get("Datetime", ""))
-            start_time = base_datetime.strftime("%Y-%m-%dT%H:%M:%S%z")
-            end_time = (base_datetime + timedelta(minutes=30)).strftime(
-                "%Y-%m-%dT%H:%M:%S%z"
-            )
-
-            return {
-                "duration_minutes": 30,
-                "start_time": start_time,
-                "end_time": end_time,
-                "relative_time": "not specified",
-            }
-
-    def _extract_with_llm(
-        self, email_content: str, request_datetime: str
-    ) -> Dict[str, Any]:
-        """
-        Use LLM to extract duration and timing information from email content.
-        """
-        prompt = f"""
-        Extract meeting information from the following email content.
-        
-        Current request time: {request_datetime}
-        Email content: "{email_content}"
-        
-        Please extract:
-        1. Meeting duration in minutes (if not specified, use 30 minutes as default; if "long meeting" mentioned, use 60 minutes)
-        2. Relative time mentioned (e.g., "Thursday", "next week", "Monday at 9:00 AM", "Tuesday at 11:00 AM")
-        
-        Return ONLY a JSON object with this exact format:
-        {{
-            "duration_minutes": <number>,
-            "relative_time": "<time description from email>"
-        }}
-        
-        Examples:
-        - "30 minutes" → duration_minutes: 30
-        - "1 hour" → duration_minutes: 60
-        - "long meeting" → duration_minutes: 60
-        - "Thursday" → relative_time: "Thursday"
-        - "Monday at 9:00 AM" → relative_time: "Monday at 9:00 AM"
-        """
-
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model_path,
-                temperature=0.0,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=150,
-            )
-
-            content = response.choices[0].message.content.strip()
-
-            # Try to parse JSON from the response
-            # Sometimes the LLM might include extra text, so we'll extract JSON
-            json_match = re.search(r"\{.*\}", content, re.DOTALL)
-            if json_match:
-                json_str = json_match.group(0)
-                return json.loads(json_str)
-            else:
-                # Fallback parsing
-                return self._fallback_parse(content)
-
-        except Exception as e:
-            print(f"LLM extraction error: {e}")
-            return {"duration_minutes": 30, "relative_time": ""}
-
-    def _fallback_parse(self, content: str) -> Dict[str, Any]:
-        """
-        Fallback parsing if JSON extraction fails.
-        """
-        duration_minutes = 30
-        relative_time = ""
-
-        # Look for duration indicators
-        content_lower = content.lower()
-        if "60" in content or "hour" in content_lower or "long" in content_lower:
-            duration_minutes = 60
-        elif "30" in content or "minutes" in content_lower:
-            duration_minutes = 30
-
-        # Look for time indicators
-        time_patterns = [
-            r"(monday|tuesday|wednesday|thursday|friday|saturday|sunday)",
-            r"(\d{1,2}:\d{2}\s*(?:am|pm)?)",
-            r"(next\s+\w+)",
-            r"(this\s+\w+)",
-        ]
-
-        for pattern in time_patterns:
-            match = re.search(pattern, content_lower)
-            if match:
-                relative_time = match.group(1)
-                break
-
-        return {"duration_minutes": duration_minutes, "relative_time": relative_time}
-
-    def _parse_datetime(self, datetime_str: str) -> datetime:
-        """
-        Parse datetime string to datetime object with IST timezone.
-        """
-        try:
-            # Parse the base datetime (assuming format: "19-07-2025T12:34:55")
-            dt = datetime.strptime(datetime_str, "%d-%m-%YT%H:%M:%S")
-            # Add IST timezone (UTC+05:30)
-            dt = dt.replace(tzinfo=None)
-            return dt
-        except Exception as e:
-            print(f"Error parsing datetime: {e}")
-            # Return current time as fallback
-            return datetime.now()
-
-    def _calculate_meeting_times(
-        self, base_datetime: datetime, duration_minutes: int, relative_time: str
-    ) -> Tuple[str, str]:
-        """
-        Calculate start and end times based on base datetime and relative time.
-        """
-        try:
-            # Calculate start time based on relative time
-            start_dt = self._calculate_start_time(base_datetime, relative_time)
-
-            # Calculate end time
-            end_dt = start_dt + timedelta(minutes=duration_minutes)
-
-            # Format times with IST timezone
-            start_time = start_dt.strftime("%Y-%m-%dT%H:%M:%S") + self.timezone_offset
-            end_time = end_dt.strftime("%Y-%m-%dT%H:%M:%S") + self.timezone_offset
-
-            return start_time, end_time
-
-        except Exception as e:
-            print(f"Error calculating meeting times: {e}")
-            # Return default times
-            start_time = (
-                base_datetime.strftime("%Y-%m-%dT%H:%M:%S") + self.timezone_offset
-            )
-            end_time = (base_datetime + timedelta(minutes=duration_minutes)).strftime(
-                "%Y-%m-%dT%H:%M:%S"
-            ) + self.timezone_offset
-            return start_time, end_time
-
-    def _calculate_start_time(
-        self, base_datetime: datetime, relative_time: str
-    ) -> datetime:
-        """
-        Calculate actual start time from base datetime and relative time description.
-        """
-        relative_time_lower = relative_time.lower()
-
-        # If no relative time specified, use next hour
-        if not relative_time:
-            return base_datetime.replace(minute=0, second=0) + timedelta(hours=1)
-
-        # Handle specific time mentions like "9:00 AM", "11:00 AM"
-        time_match = re.search(r"(\d{1,2}):(\d{2})\s*(am|pm)?", relative_time_lower)
-        if time_match:
-            hour = int(time_match.group(1))
-            minute = int(time_match.group(2))
-            period = time_match.group(3)
-
-            if period == "pm" and hour != 12:
-                hour += 12
-            elif period == "am" and hour == 12:
-                hour = 0
-
-            # Find the target day
-            target_date = self._find_target_date(base_datetime, relative_time_lower)
-            return target_date.replace(hour=hour, minute=minute, second=0)
-
-        # Handle day-only mentions
-        target_date = self._find_target_date(base_datetime, relative_time_lower)
-
-        # Default to 10:00 AM if no specific time mentioned
-        return target_date.replace(hour=10, minute=0, second=0)
-
-    def _find_target_date(
-        self, base_datetime: datetime, relative_time: str
-    ) -> datetime:
-        """
-        Find the target date based on relative time description.
-        """
-        days_of_week = {
-            "monday": 0,
-            "tuesday": 1,
-            "wednesday": 2,
-            "thursday": 3,
-            "friday": 4,
-            "saturday": 5,
-            "sunday": 6,
-        }
-
-        # Check for specific day mentions
-        for day_name, day_num in days_of_week.items():
-            if day_name in relative_time:
-                # Find next occurrence of this day
-                current_day = base_datetime.weekday()
-                days_ahead = (day_num - current_day) % 7
-                if days_ahead == 0:  # If it's the same day, assume next week
-                    days_ahead = 7
-                return base_datetime + timedelta(days=days_ahead)
-
-        # Handle "next week" or similar
-        if "next week" in relative_time:
-            return base_datetime + timedelta(days=7)
-        elif "next" in relative_time:
-            return base_datetime + timedelta(days=1)
-
-        # Default to tomorrow
-        return base_datetime + timedelta(days=1)
-
-
-def extract_meeting_time_info(
-    request_data: Dict[str, Any],
-    base_url: str = "http://localhost:3000/v1",
-    api_key: str = "NULL",
-    model_path: str = "/home/user/Models/deepseek-ai/deepseek-llm-7b-chat",
-) -> Dict[str, Any]:
-    """
-    Main function to extract meeting time information from a request.
+    Extract time window from meeting request using LLM.
 
     Args:
-        request_data: Meeting request JSON
-        base_url: Base URL for OpenAI-compatible API
-        api_key: API key (usually "NULL" for vLLM)
-        model_path: Path to the model
+        meeting_request: Dictionary containing meeting details with EmailContent
 
     Returns:
-        Dict containing duration_minutes, start_time, end_time
+        Dictionary with duration (float in hours), start_time and end_time (ISO timestamps)
     """
-    extractor = MeetingTimeExtractor(
-        base_url=base_url, api_key=api_key, model_path=model_path
-    )
-    return extractor.extract_meeting_info(request_data)
+
+    # Get current datetime for reference
+    current_time = datetime.now()
+    current_iso = current_time.isoformat()
+
+    # Extract relevant information for the LLM
+    email_content = meeting_request.get("EmailContent", "")
+    subject = meeting_request.get("Subject", "")
+    request_datetime = meeting_request.get("Datetime", current_iso)
+
+    # Create the prompt with examples and instructions
+    prompt = f"""You are a meeting scheduler AI. Extract time windows from natural language meeting requests.
+
+Current date and time: {current_iso}
+Request made on: {request_datetime}
+
+EXAMPLES:
+Input: "Let's meet on Thursday at 10 am for 20 minutes"
+Output: {{"duration": 20, "start_time": "2025-07-24T10:00:00", "end_time": "2025-07-24T10:20:00"}}
+
+Input: "Can we meet Friday for 1 hour"
+Output: {{"duration": 60, "start_time": "2025-07-25T00:00:00", "end_time": "2025-07-25T23:59:00"}}
+
+Input: "Let's schedule 30 minutes sometime next week"
+Output: {{"duration": 30, "start_time": "2025-07-21T00:00:00", "end_time": "2025-07-25T23:30:00"}}
+
+Input: "Meeting tomorrow at 2 PM for 45 minutes"
+Output: {{"duration": 45, "start_time": "2025-07-20T14:00:00", "end_time": "2025-07-20T14:45:00"}}
+
+RULES:
+1. Duration is in hours (decimal format)
+2. If specific time given, start_time = exact time, end_time = start_time
+3. If only day given, start_time = day 00:00, end_time = day 23:59
+4. If vague time like "next week", give the full range where meeting can fit
+5. Calculate all times relative to current date: {current_iso}
+6. Use ISO 8601 format for timestamps
+7. If duration is not specified, assume 30 minutes
+8. Return ONLY valid JSON, no explanations
+
+MEETING REQUEST:
+Subject: {subject}
+Content: {email_content}
+
+Extract the time window:"""
+
+    try:
+        # Call the LLM
+        response = client.chat.completions.create(
+            model=MODEL_PATH,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a precise meeting scheduler. Return only valid JSON with duration, start_time, and end_time fields.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.1,
+            max_tokens=200,
+        )
+
+        # Extract and parse the response
+        llm_output = response.choices[0].message.content.strip()
+
+        # Try to extract JSON from the response
+        try:
+            # Handle cases where LLM might add extra text
+            json_start = llm_output.find("{")
+            json_end = llm_output.rfind("}") + 1
+            if json_start >= 0 and json_end > json_start:
+                json_str = llm_output[json_start:json_end]
+                result = json.loads(json_str)
+            else:
+                result = json.loads(llm_output)
+        except json.JSONDecodeError:
+            # Fallback: try to parse the entire response
+            result = json.loads(llm_output)
+
+        # Validate the required fields
+        required_fields = ["duration", "start_time", "end_time"]
+        for field in required_fields:
+            if field not in result:
+                raise ValueError(f"Missing required field: {field}")
+
+        return result
+
+    except Exception as e:
+        # Return a default response if LLM fails
+        print(f"Error extracting time window: {e}")
+
+
+def preprocess_meeting_request(raw_request: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Preprocess the input to extract only relevant parts for time extraction.
+
+    Args:
+        raw_request: Full meeting request dictionary
+
+    Returns:
+        Simplified dictionary with relevant fields
+    """
+    return {
+        "Subject": raw_request.get("Subject", ""),
+        "EmailContent": raw_request.get("EmailContent", ""),
+        "Datetime": raw_request.get("Datetime", datetime.now().isoformat()),
+        "Location": raw_request.get("Location", ""),
+    }
+
+
+# Example usage
+if __name__ == "__main__":
+    # Test with the provided example
+    test_cases = [
+        {
+            "name": "Test Case 1 - Thursday 30 minutes (Broad Day)",
+            "data": {
+                "Request_id": "6118b54f-907b-4451-8d48-dd13d76033a5",
+                "Datetime": "19-07-2025T12:34:55",
+                "Location": "IISc Bangalore",
+                "From": "userone.amd@gmail.com",
+                "Attendees": [
+                    {"email": "usertwo.amd@gmail.com"},
+                    {"email": "userthree.amd@gmail.com"},
+                ],
+                "Subject": "Agentic AI Project Status Update",
+                "EmailContent": "Hi team, let's meet on Thursday for 30 minutes to discuss the status of Agentic AI Project.",
+            },
+        },
+        {
+            "name": "Test Case 2 - Monday 9:00 AM (Specific Time)",
+            "data": {
+                "Request_id": "6118b54f-907b-4451-8d48-dd13d76033b5",
+                "Datetime": "19-07-2025T12:34:55",
+                "Location": "IISc Bangalore",
+                "From": "userone.amd@gmail.com",
+                "Attendees": [
+                    {"email": "usertwo.amd@gmail.com"},
+                    {"email": "userthree.amd@gmail.com"},
+                ],
+                "Subject": "Client Validation - Urgent",
+                "EmailContent": "Hi Team. We've just received quick feedback from the client indicating that the instructions we provided aren't working on their end. Let's prioritize resolving this promptly. Let's meet Monday at 9:00 AM to discuss and resolve this issue.",
+            },
+        },
+        {
+            "name": "Test Case 3 - Tuesday 11:00 AM (Specific Time)",
+            "data": {
+                "Request_id": "6118b54f-907b-4451-8d48-dd13d76033c5",
+                "Datetime": "19-07-2025T12:34:55",
+                "Location": "IISc Bangalore",
+                "From": "userone.amd@gmail.com",
+                "Attendees": [
+                    {"email": "usertwo.amd@gmail.com"},
+                    {"email": "userthree.amd@gmail.com"},
+                ],
+                "Subject": "Project Status",
+                "EmailContent": "Hi Team. Let's meet on Tuesday at 11:00 A.M and discuss about our on-going Projects.",
+            },
+        },
+        {
+            "name": "Test Case 4 - Next Week (Broad Week)",
+            "data": {
+                "Request_id": "6118b54f-907b-4451-8d48-dd13d76033d5",
+                "Datetime": "19-07-2025T12:34:55",
+                "Location": "IISc Bangalore",
+                "From": "userone.amd@gmail.com",
+                "Attendees": [
+                    {"email": "usertwo.amd@gmail.com"},
+                    {"email": "userthree.amd@gmail.com"},
+                ],
+                "Subject": "Client Feedback",
+                "EmailContent": "Hi Team. let's meet next week to discuss",
+            },
+        },
+        {
+            "name": "Test Case 5 ",
+            "data": {
+                "Request_id": "6118b54f-907b-4451-8d48-dd13d76033d6",
+                "Datetime": "19-07-2025T12:34:55",
+                "Location": "IISc Bangalore",
+                "From": "userone.amd@gmail.com",
+                "Attendees": [
+                    {"email": "usertwo.amd@gmail.com"},
+                    {"email": "userthree.amd@gmail.com"},
+                ],
+                "Subject": "Weekly Review",
+                "EmailContent": "Hi team, let's meet on Thursday at 11:00 AM to discuss the status of Agentic AI Project.",
+            },
+        },
+    ]
+
+    for sample_request in test_cases:
+        print(f"Running {sample_request['data']['EmailContent']}...")
+
+        # Preprocess the request
+        processed_request = preprocess_meeting_request(sample_request["data"])
+
+        # Extract time window using LLM
+        time_window = extract_time_window(processed_request)
+
+        print("Extracted Time Window:")
+        print(json.dumps(time_window, indent=2))
+        print("-" * 50)
