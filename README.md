@@ -215,6 +215,17 @@ Your Final Output JSON should follow below structure.  <br>
             "email": "userone.amd@gmail.com",
             "events": [
                 {
+                    "StartTime": "2025-07-24T10:00:00+05:30",
+                    "EndTime": "2025-07-24T10:30:00+05:30",
+                    "NumAttendees": 3,
+                    "Attendees": [
+                        "userone.amd@gmail.com",
+                        "usertwo.amd@gmail.com",
+                        "userthree.amd@gmail.com"
+                    ],
+                    "Summary": "Team Meet"
+                },
+                {
                     "StartTime": "2025-07-24T10:30:00+05:30",
                     "EndTime": "2025-07-24T11:00:00+05:30",
                     "NumAttendees": 3,
@@ -333,5 +344,4 @@ print(response.json())
 - Creativeness in Approach – Innovation, originality, and problem-solving uniqueness 
 - Scoring Based on Performance – Combined assessment of correctness, latency, repo quality, and creativity 
 - Ranking Methodology – Comparative evaluation to determine the best-performing solution
-
 
