@@ -36,7 +36,7 @@ Traditional scheduling tools rely on rule-based automation or human input. Your 
 
 ### To access MI300 Instance, follow the steps as mentioned below :
 
-<img width="809" height="857" alt="{E739B41B-9914-45A1-8413-778E28C7F3E6}" src="https://github.com/user-attachments/assets/3b9d68c7-f994-486b-8734-ff61648bb192" />
+<img width="857" height="910" alt="image" src="https://github.com/user-attachments/assets/1e112e54-df82-4a53-9ca2-903c08bc2164" />
 
 
 ----------------
