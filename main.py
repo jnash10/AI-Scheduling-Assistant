@@ -56,7 +56,7 @@ class MeetingResponse(BaseModel):
 
 def filter_off_hours_events(events: List[Dict]) -> List[Dict]:
     """Filter out events with 'Off Hours' in the summary"""
-    return [event for event in events if event.get("Summary", "") != "Off Hours"]
+    return events
 
 
 def apply_rescheduling_to_attendee_events(

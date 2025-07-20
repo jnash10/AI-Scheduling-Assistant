@@ -50,6 +50,68 @@ def has_conflict(proposed_start, proposed_end, attendee_events):
     return len(conflicting_meetings) > 0, conflicting_meetings
 
 
+def find_first_free_slot_in_window(
+    start_window_str, end_window_str, duration_mins, attendee_events
+):
+    """
+    Finds the first available time slot of a given duration within a specified window
+    by checking the gaps between existing events.
+    """
+    start_window = parse_time(start_window_str)
+    end_window = parse_time(end_window_str)
+    duration = timedelta(minutes=duration_mins)
+
+    # 1. Merge all non-"Off Hours" events from all attendees into a single list of busy times
+    busy_times = []
+    for email, events in attendee_events.items():
+        for event in events:
+            if event["Summary"] == "Off Hours":
+                continue
+            busy_times.append(
+                {
+                    "start": parse_time(event["StartTime"]),
+                    "end": parse_time(event["EndTime"]),
+                }
+            )
+
+    # If there are no busy intervals, the entire window is available
+    if not busy_times:
+        if start_window + duration <= end_window:
+            return format_time(start_window), format_time(start_window + duration)
+        else:
+            return None, None
+
+    # 2. Sort and merge overlapping busy intervals to get a clean timeline
+    busy_times.sort(key=lambda x: x["start"])
+    merged_busy_times = [busy_times[0]]
+    for current in busy_times[1:]:
+        last = merged_busy_times[-1]
+        if current["start"] < last["end"]:
+            last["end"] = max(last["end"], current["end"])
+        else:
+            merged_busy_times.append(current)
+
+    # 3. Check for a free slot in the gaps between busy intervals
+    # Check the gap from the window start to the first busy interval
+    last_busy_end = start_window
+    for busy_slot in merged_busy_times:
+        free_start = max(last_busy_end, start_window)
+        free_end = min(busy_slot["start"], end_window)
+
+        if free_end - free_start >= duration:
+            return format_time(free_start), format_time(free_start + duration)
+
+        last_busy_end = busy_slot["end"]
+
+    # Check the gap after the last busy interval to the window end
+    if end_window - max(last_busy_end, start_window) >= duration:
+        free_start = max(last_busy_end, start_window)
+        return format_time(free_start), format_time(free_start + duration)
+
+    # 4. If no suitable gap is found
+    return None, None
+
+
 def find_free_slots(duration_minutes, attendee_events):
     """
     Find all free slots of given duration where all attendees are available
@@ -186,56 +248,90 @@ Example:
 
 def intelligent_meeting_scheduler(input_request):
     """
-    Main scheduler function implementing the 4-step algorithm
+    Main scheduler function implementing the 4-step algorithm with optimization.
     """
-    # Step 1: Get proposed time
+    # Step 1: Get proposed time window
     proposed_time = extract_time_window(input_request)
     print(f"Step 1 - Proposed time: {proposed_time}")
 
-    # Step 2: Check conflicts
+    # Step 2: Fetch calendars and check for conflicts
     attendee_events = get_all_attendee_events_2_days_parallel(
         proposed_time, input_request
     )
-    print("attendee events: ", attendee_events)
     has_conflicts, conflicting_meetings = has_conflict(
         proposed_time["start_time"], proposed_time["end_time"], attendee_events
     )
 
+    # Case 1: No events in the window at all. Schedule immediately.
     if not has_conflicts:
-        print("Step 2 - No conflicts found, using proposed time")
+        print("Step 2 - No conflicts found, scheduling directly.")
         return {
             "decision": {
-                "final_start_time": proposed_time["start_time"],
-                "final_end_time": proposed_time["end_time"],
-                "conflict_start_time": None,
-                "conflict_end_time": None,
+                "proposed_final_start": proposed_time["start_time"],
+                "proposed_final_end": proposed_time["end_time"],
+                "conflicting_final_start": None,
+                "conflicting_final_end": None,
+                "decision_reason": "Scheduled at the start of the requested window as it was free.",
             },
             "attendee_events": attendee_events,
         }
 
-    print(f"Step 2 - Conflicts found: {len(conflicting_meetings)} meetings")
+    print(
+        f"Step 2 - Found {len(conflicting_meetings)} potential conflicts. Checking for free slots to avoid LLM call."
+    )
 
-    # Step 3: Find free slots
+    # OPTIMIZATION: Before calling the LLM, check if a free slot exists in the requested window.
+    first_available_start, first_available_end = find_first_free_slot_in_window(
+        proposed_time["start_time"],
+        proposed_time["end_time"],
+        proposed_time["duration"],
+        attendee_events,
+    )
+
+    # Case 2: Optimization successful. A free slot was found. Schedule and skip LLM.
+    if first_available_start:
+        print(
+            f"Step 2.5 - Optimization success! Found free slot: {first_available_start}. Skipping LLM."
+        )
+        return {
+            "decision": {
+                "proposed_final_start": first_available_start,
+                "proposed_final_end": first_available_end,
+                "conflicting_final_start": None,
+                "conflicting_final_end": None,
+                "decision_reason": "Scheduled in the first available slot within the requested window, avoiding a conflict.",
+            },
+            "attendee_events": attendee_events,
+        }
+
+    # Case 3: True conflict. No free slots in the window. Proceed with LLM.
+    print(
+        "Step 2.5 - Optimization failed. No direct free slot found. Proceeding to LLM for rescheduling."
+    )
+
+    # Step 3: Find free slots in a wider range for the LLM to use
     free_slots = find_free_slots(proposed_time["duration"], attendee_events)
-    print(f"Step 3 - Found {len(free_slots)} free slots")
+    print(f"Step 3 - Found {len(free_slots)} free slots for LLM to consider.")
 
     if not free_slots:
-        print("No free slots available!")
+        print("No free slots available for rescheduling! Returning original proposal.")
         return {
             "decision": {
-                "final_start_time": proposed_time["start_time"],
-                "final_end_time": proposed_time["end_time"],
-                "conflict_start_time": None,
-                "conflict_end_time": None,
+                "proposed_final_start": proposed_time["start_time"],
+                "proposed_final_end": proposed_time["end_time"],
+                "conflicting_final_start": None,
+                "conflicting_final_end": None,
+                "decision_reason": "Conflict exists but no alternative slots were found.",
             },
             "attendee_events": attendee_events,
         }
 
-    # Step 4: Use LLM to decide
+    # Step 4: Use LLM to decide on the best resolution
+    print("Step 4 - Calling LLM for intelligent scheduling.")
     llm_decision = schedule_with_llm(
         input_request, proposed_time, conflicting_meetings, free_slots
     )
-    print(f"Step 4 - LLM decision: {llm_decision['decision_reason']}")
+    print(f"Step 4 - LLM decision: {llm_decision.get('decision_reason', 'N/A')}")
 
     return {
         "conflicts": conflicting_meetings,
