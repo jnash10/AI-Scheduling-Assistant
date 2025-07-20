@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import json
-from get_attendee_events import get_all_attendee_events_2_days
+from get_attendee_events import (
+    get_all_attendee_events_2_days_parallel,
+)
 from request_to_time import extract_time_window
 
 
@@ -174,6 +176,7 @@ Example:
             },
             {"role": "user", "content": prompt},
         ],
+        max_tokens=500,
         temperature=0.1,
     )
 
@@ -190,7 +193,9 @@ def intelligent_meeting_scheduler(input_request):
     print(f"Step 1 - Proposed time: {proposed_time}")
 
     # Step 2: Check conflicts
-    attendee_events = get_all_attendee_events_2_days(proposed_time, input_request)
+    attendee_events = get_all_attendee_events_2_days_parallel(
+        proposed_time, input_request
+    )
     print("attendee events: ", attendee_events)
     has_conflicts, conflicting_meetings = has_conflict(
         proposed_time["start_time"], proposed_time["end_time"], attendee_events
@@ -204,7 +209,8 @@ def intelligent_meeting_scheduler(input_request):
                 "final_end_time": proposed_time["end_time"],
                 "conflict_start_time": None,
                 "conflict_end_time": None,
-            }
+            },
+            "attendee_events": attendee_events,
         }
 
     print(f"Step 2 - Conflicts found: {len(conflicting_meetings)} meetings")
@@ -216,10 +222,13 @@ def intelligent_meeting_scheduler(input_request):
     if not free_slots:
         print("No free slots available!")
         return {
-            "final_start_time": proposed_time["start_time"],
-            "final_end_time": proposed_time["end_time"],
-            "conflicts": conflicting_meetings,
-            "error": "No free slots available",
+            "decision": {
+                "final_start_time": proposed_time["start_time"],
+                "final_end_time": proposed_time["end_time"],
+                "conflict_start_time": None,
+                "conflict_end_time": None,
+            },
+            "attendee_events": attendee_events,
         }
 
     # Step 4: Use LLM to decide
@@ -231,6 +240,7 @@ def intelligent_meeting_scheduler(input_request):
     return {
         "conflicts": conflicting_meetings,
         "decision": llm_decision,
+        "attendee_events": attendee_events,
     }
 
 

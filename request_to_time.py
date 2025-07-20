@@ -2,6 +2,7 @@ import openai
 import json
 from datetime import datetime, timedelta
 from typing import Dict, Any
+from time_profiler import timeit
 
 # Your existing client configuration
 BASE_URL = "http://localhost:4000/v1"
@@ -13,6 +14,7 @@ client = openai.OpenAI(
 )
 
 
+@timeit
 def extract_time_window(meeting_request: Dict[str, Any]) -> Dict[str, Any]:
     """
     Extract time window from meeting request using LLM.
@@ -56,7 +58,7 @@ RULES:
 2. If specific time given, start_time = exact time, end_time = start_time
 3. If only day given, start_time = day 00:00, end_time = day 23:59
 4. If vague time like "next week", give the full range where meeting can fit
-5. Calculate all times relative to current date: {current_iso}
+5. Calculate all times relative to request date: {request_datetime}
 6. Use ISO 8601 format for timestamps
 7. If duration is not specified, assume 30 minutes
 8. Return ONLY valid JSON, no explanations

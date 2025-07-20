@@ -9,4 +9,19 @@
 
 HIP_VISIBLE_DEVICES=0 vllm serve deepseek-ai/deepseek-llm-7b-chat         --gpu-memory-utilization 0.9         --swap-space 16         --disable-log-requests         --dtype float16         --max-model-len 10000         --tensor-parallel-size 1         --host 0.0.0.0         --port 3000         --num-scheduler-steps 10         --max-num-seqs 128         --max-num-batched-tokens 10000         --max-model-len 10000         --distributed-executor-backend "mp"
 
-HIP_VISIBLE_DEVICES=0 vllm serve Models/meta-llama/Llama-3.3-70B-Instruct         --gpu-memory-utilization 0.9         --swap-space 16         --disable-log-requests         --dtype float16         --max-model-len 10000         --tensor-parallel-size 1         --host 0.0.0.0         --port 4000         --num-scheduler-steps 10         --max-num-seqs 128         --max-num-batched-tokens 10000         --max-model-len 10000         --distributed-executor-backend "mp"
+HIP_VISIBLE_DEVICES=0 vllm serve Models/meta-llama/Llama-3.3-70B-Instruct \
+    --disable-log-requests \
+    --dtype bfloat16 \
+    --max-model-len 10000 \
+    --tensor-parallel-size 1 \
+    --host 0.0.0.0 \
+    --port 4000 \
+    --num-scheduler-steps 10 \
+    --distributed-executor-backend "mp" \
+    --enable-chunked-prefill \
+    --max-num-batched-tokens 16384 \
+    --use-v2-block-manager \
+    --kv-cache-dtype fp8 \
+    --max-num-seqs 64 \
+    --gpu-memory-utilization 0.95 \
+    --swap-space 0
